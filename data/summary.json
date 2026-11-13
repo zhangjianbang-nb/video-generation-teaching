@@ -1,0 +1,136 @@
+{
+  "sections": [
+    {
+      "title": "一、这个领域到底在解决什么",
+      "body": "视频生成的本质问题是：如何在一个「比图像多一个时间维」的空间里，学会真实世界的分布。多出来的这一维带来三个连锁困难：数据量爆炸（一秒钟 24 帧，每帧都是一张图）、算力爆炸（注意力随 token 数平方增长）、评价困难（「像不像视频」比「像不像图」难定义得多）。六条支线——架构、长视频、控制、编辑、效率、评测——本质上是在回答同一个问题的六个侧面：怎么表示时间、怎么记住时间、怎么指挥时间、怎么改写时间、怎么省掉时间、怎么衡量时间。"
+    },
+    {
+      "title": "二、六条支线怎么拼成一张地图",
+      "body": "架构是地基：3D U-Net → 潜空间扩散 → Video DiT，每一次替换都在「表达力 vs 成本」之间重新划界。长视频是架构的直接后果：表示压得越狠，能生成的帧越多；但压缩会丢记忆，于是有了滑动窗口、历史压缩、抗漂移。控制与编辑是「用户接口」：控制是「生成前给意图」，编辑是「生成后改结果」，两者共享同一套条件注入机制。效率是「成本账本」：少步蒸馏省采样、金字塔/高压缩省训练与长视频。评测是「裁判」：FVD 给总分，VBench 给分项，VBench-2.0 问「符不符合世界」。六条线不是并列的，而是「地基→能力→接口→成本→裁判」的依赖链。"
+    },
+    {
+      "title": "三、三次范式转移",
+      "body": "第一次：像素 → 潜空间（2023）。Video LDM 证明在 VAE 潜空间做扩散，算力降一个数量级，画质不降；此后所有视频模型都在潜空间工作。第二次：U-Net → DiT（2024）。CogVideoX 用 3D VAE + 全注意力 DiT，把模型从 2B 平滑扩到 14B；U-Net 的多尺度归纳偏置被数据量取代。第三次：单段生成 → 长视频/流式（2024–2025）。自回归、滑动窗口、金字塔三条路线把「一次 4 秒」推到「分钟级、上千帧」，FramePack 甚至让 13B 模型在 6GB 笔记本显存上跑。"
+    },
+    {
+      "title": "四、数字背后的真实差距",
+      "body": "读论文时最容易被「FVD 降了 20」骗到。FVD 论文自己说：差小于 50 人类几乎分不出。所以看到 FVD 从 300 降到 280，先问「这 20 在感知上存在吗」。VBench 的数字也类似：Overall Consistency 的 Empirical Max 只有 36.40%，说明这个维度本身还没被解决；Dynamic Degree 从 42% 到 90% 的差距，比总分差 5 分更能说明问题。真正可信的进步要同时满足三条：指标差距超过感知阈值、多个维度同向改善、有人类偏好或下游任务佐证。"
+    },
+    {
+      "title": "五、给工程师的选型建议",
+      "body": "要做产品，先问三个问题：① 多长？4–10 秒选 CogVideoX/Wan 这类单段模型；分钟级选 SkyReels/FramePack 这类长视频方案。② 多快？实时选 LTX-Video（1:192 压缩 + 少步）；离线高质量选 13B 级模型 + 蒸馏。③ 要不要控制？要相机选 CameraCtrl（Plücker + RotErr/TransErr 可量化）；要物体轨迹选 MotionCtrl/DragNUWA；要编辑选 TokenFlow/RAVE（免训练）或 Tune-A-Video（高一致性但慢）。评测别只看 FVD，至少加 VBench 16 维和一次人类偏好。"
+    },
+    {
+      "title": "六、这本书怎么读",
+      "body": "建议按「故事 → 理论 → 精读 → 考试」的顺序：先用四个故事建立直觉（先读《一粒噪声的还乡记》，它十站对应十章、是全景主线；再看制片厂=条件、时间机器=长视频、剪辑室=编辑），再读 15 张理论卡补齐公式与机制，然后按先修拓扑序精读 31 篇论文（从 VDM 到 VBench-2.0），最后用 41 道题自测。如果时间有限，优先读 VDM、Video LDM、CogVideoX、Wan、FramePack、VBench 六篇——它们分别代表架构、潜空间、DiT、规模化、长视频、评测六个转折点。"
+    }
+  ],
+  "comparisons": [
+    {
+      "title": "架构四代对比",
+      "headers": [
+        "代际",
+        "代表工作",
+        "时间建模",
+        "优点",
+        "代价"
+      ],
+      "rows": [
+        [
+          "3D U-Net（2022）",
+          "VDM / Make-A-Video",
+          "3D 卷积 + 少量时间注意力",
+          "实现简单、参数效率高",
+          "长视频感受野有限"
+        ],
+        [
+          "潜空间 U-Net（2023）",
+          "Video LDM / SVD",
+          "潜空间 3D 卷积 + 时间注意力",
+          "算力降一个数量级",
+          "VAE 重建成为画质上限"
+        ],
+        [
+          "Video DiT（2024）",
+          "CogVideoX / Latte",
+          "时空全注意力",
+          "可扩展、长程建模强",
+          "显存高、需大数据"
+        ],
+        [
+          "规模化 DiT（2025）",
+          "Wan / HunyuanVideo",
+          "双流→单流 + 专家路由",
+          "13B 级商用质量",
+          "训练与推理成本高"
+        ]
+      ]
+    },
+    {
+      "title": "少步蒸馏三条路线",
+      "headers": [
+        "方法",
+        "训练目标",
+        "最少步数",
+        "代表数字",
+        "主要风险"
+      ],
+      "rows": [
+        [
+          "LCM（一致性蒸馏）",
+          "轨迹上相邻点预测一致",
+          "1–4 步",
+          "4 步 FID 11.10（DDIM 22.38）",
+          "1 步质量差（FID 35.36）"
+        ],
+        [
+          "DMD2（分布匹配）",
+          "生成分布 score = 真实分布 score",
+          "1 步",
+          "ImageNet-64 1 步 FID 1.51（教师 2.32）",
+          "GAN 训练不稳"
+        ],
+        [
+          "Pyramid Flow（金字塔）",
+          "多分辨率逐层流匹配",
+          "少步 + 分层",
+          "20.7k A100 小时出 10 秒 768p",
+          "语义对齐偏弱（69.62%）"
+        ]
+      ]
+    }
+  ],
+  "trends": [
+    "架构收敛：3D VAE + Video DiT 成为事实标准，U-Net 退到小数据/编辑场景",
+    "长视频三范式并行：自回归（FramePack）、分块扩散（SkyReels）、金字塔（Pyramid Flow）",
+    "控制从单条件走向多条件统一：相机 + 物体 + 文本塞进同一个 DiT",
+    "编辑全面免训练化：TokenFlow/RAVE 用推理技巧替代逐视频微调",
+    "评测从「一个标量」走向「分项体检 + 真实性审查」，VBench 成为标配"
+  ],
+  "open_problems": [
+    "长视频的身份/场景漂移仍未根治：FramePack 的 ΔAnatomy 8.58% 已是最好，但 1000 帧后仍会变脸",
+    "物理与常识：VBench-2.0 指出模型在重力、材料、人体结构上经常出错，自动评估本身也不可靠",
+    "控制精度缺统一指标：只有相机有 RotErr/TransErr，物体轨迹、多条件冲突都没有公认度量",
+    "语义对齐与运动幅度的矛盾：Pyramid Flow 的 Semantic 69.62% vs Motion 99.12%，两者难以兼得",
+    "训练成本不透明：多数商用模型不公开数据与算力，复现困难"
+  ],
+  "future": [
+    "音视频联合生成：视频与音频共享时间轴，联合建模是下一个前沿",
+    "世界模型化：从「生成像视频的像素」走向「预测世界的状态」，需要物理与因果结构",
+    "实时 + 可控 + 长视频三合一：目前三者最多同时满足两个，是工程上的下一个圣杯"
+  ],
+  "learning_order": [
+    "story-film-studio（先建立直觉）",
+    "theory-diffusion → theory-cfg → theory-temporal-attn（补基础）",
+    "paper-ho-2022-vdm → paper-singer-2022-makeavideo（ diffusion 元年）",
+    "paper-blattmann-2023-videoldm → paper-blattmann-2023-svd（潜空间与规模化）",
+    "paper-yang-2024-cogvideox → paper-ma-2024-latte（DiT 转向）",
+    "paper-kong-2024-hunyuanvideo → paper-wan-2025（规模化）",
+    "paper-chen-2025-skyreels → paper-zhang-2025-framepack（长视频）",
+    "paper-zhang-2023-controlnet → paper-wang-2024-motionctrl → paper-he-2024-cameractrl（控制）",
+    "paper-wu-2023-tuneavideo → paper-geyer-2023-tokenflow → paper-kara-2023-rave（编辑）",
+    "paper-luo-2023-lcm → paper-yin-2024-dmd2 → paper-jin-2024-pyramidflow（效率）",
+    "paper-unterthiner-2018-fvd → paper-huang-2023-vbench → paper-zheng-2025-vbench2（评测）"
+  ],
+  "external_review": "外部评审 2026-11-11：ChatGPT 对初版方向地图给出 17,130 字评审。采纳 9 项：D1/D2 边界重构、D3/D4 区分、D5 效率拆分、D6 评测扩展、因果链纠正（Make-A-Video/Imagen Video 与 VDM 并行、CogVideo 自回归与 CogVideoX DiT 非继承、ControlNet→AnimateDiff→MotionCtrl 因果不成立）、长视频三范式、VAE 空间/时间压缩区分、评测四层。部分采纳 2 项：主体身份一致性并入控制方向；世界模型/音视频/理解生成统一写入 gaps。驳回 1 项：直接扩为 10 个方向（超出 L2 范围，且部分方向无可核验经典论文）。全文归档 research/chatgpt/review-20261111-raw.txt，逐条处置见 research/chatgpt/decisions.md。"
+}
