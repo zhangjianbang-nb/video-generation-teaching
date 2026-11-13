@@ -55,11 +55,12 @@
 
 ## 验收记录（2026-11-13 终态）
 
-- `bash tools/verify_all.sh`：**VERIFY ALL PASS**（ledger 3,292,306 / 109.74%；assert_all ALL PASS；smoke ALL PASS；112 张图 0 问题；390px 窄屏 0 溢出）
+- `bash tools/verify_all.sh`：**VERIFY ALL PASS**（ledger 3,292,794 / 109.76%；assert_all ALL PASS；smoke ALL PASS；112 张图 0 问题；390px 窄屏 0 溢出）
 - 演进图：30 节点 / 23 边；时间线 8 条（2018–2026 七个转折 + 2027 展望）
 - 故事页改版：4 幅场景插画（制片厂/时间机器/剪辑室/一粒噪声）+ 旗舰英雄卡 + 十站路线图；5 页截图逐页目检，残留斜线已清并像素断言 PASS
+- 2026-11-13 二次修订：2026 论文 `pipeline` 改为 3–4 项列表（原字符串在页面不渲染）、算法档位 `latest→recent`、APEX 论文/算法页重复的「类比失效」段改写；skill 新增的 `dup_scan` 闸门抓到并修复
 - 本轮未做三轮四维 subagent 校验；以主控逐页视觉验收 + 项目内断言为准
-- 字数口径：ledger **3,292,306 可见字符 / 109.74%**（本站目标 300 万）
+- 字数口径：ledger **3,292,794 可见字符 / 109.76%**（本站目标 300 万）
 
 ## 诚实边界
 
@@ -67,7 +68,7 @@
 - YouTube 渠道未执行；教学叙事为原创机制叙事，不声称引用视频作者观点。
 - 所有实验数字为论文自报，未复现；商用闭源（Sora/Kling/Gen-3）无公开论文，未进核心库。
 - 2026 年两篇（TaoMate-R1 / APEX）为**摘要级核验**（`read_level=abstract_only`），数字只来自 arXiv 摘要，未下载全文；页面已如实标注。
-- 本站验收口径是 **300 万可见字符（L2）**；skill 的 `verify_site.py` 默认 500 万下限不适用于本站，故以 `tools/verify_all.sh` 为准。
+- 本站验收口径是 **300 万可见字符（L2）**；skill 的 `verify_site.py` 默认 500 万下限，现支持 `--min-chars 3000000` 或 `site/contract.json` 覆盖（会打印下限来源）。按 300 万口径复验后仍有 50 项 skill L2 的公式/图表分布要求未满足（全书章节与题库未按该档配齐），已在本页与交付总结披露。
 
 ## 许可
 
