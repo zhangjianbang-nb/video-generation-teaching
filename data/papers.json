@@ -4350,7 +4350,12 @@
         "role": "用固定历史回放刻画两种参数共享方案允许的更新方向"
       }
     ],
-    "pipeline": "参考图编码 → 建立 chunk（Δθ_est 去噪 + 写历史）→ 切换 Δθ_cont → 读历史 + 新指令 → 续写 chunk → 写回历史 → 循环至流结束；训练阶段两个角色按 chunk 顺序交替、共享同一段历史做 Self Gradient Forcing。",
+    "pipeline": [
+      "参考图与场景提示编码，作为建立 chunk 的条件",
+      "建立角色 Δθ_est 去噪首个 chunk，并把人物/场景身份写入历史缓存",
+      "切换到续写角色 Δθ_cont，读取历史与新指令，续写下一个 chunk",
+      "把新 chunk 写回历史，循环至流结束；训练时两角色按 chunk 顺序交替、共享同一段历史做 Self Gradient Forcing"
+    ],
     "formula": "$$\\theta=\\theta_{\\text{base}}+\\Delta\\theta_{\\text{est}}+\\Delta\\theta_{\\text{cont}},\\quad \\mathcal{L}=\\mathbb{E}_{t,x_0,c}\\Big[\\big\\|\\epsilon-\\epsilon_{\\theta_{r}}(x_t,c,h_{r})\\big\\|^2\\Big],\\ r\\in\\{\\text{est},\\text{cont}\\}$$",
     "variables": [
       {
@@ -4499,7 +4504,12 @@
         "role": "块级生成后做一次空间精修，补画质"
       }
     ],
-    "pipeline": "文本条件 c → 学生少步生成当前 block → 冻结教师给监督 → 同一学生以平移条件 c' 估计假速度场 → DMD 式损失更新 → 写回历史 → Self-Replay Forcing 对齐 → 空间 Refiner 精修 → 下一 block。",
+    "pipeline": [
+      "文本条件 c 进入学生，少步生成当前 block",
+      "冻结教师给出真实速度场监督；同一学生以平移条件 c' 估计假速度场",
+      "DMD 式损失更新参数，写回历史并用 Self-Replay Forcing 对齐",
+      "一步空间 Refiner 精修画质，进入下一 block"
+    ],
     "formula": "$$v_{\\text{fake}}(x_t,t)=\\frac{x_t-\\hat{x}_{\\theta}(x_t,t,c')}{t},\\quad \\mathcal{L}=\\mathbb{E}\\Big[\\big\\|v_{\\text{fake}}-v_{\\text{real}}\\big\\|^2\\Big]+\\lambda\\,\\mathcal{L}_{\\text{perc}}$$",
     "variables": [
       {
